@@ -19,12 +19,28 @@ export interface CategoryData {
   priority?: number;         // 用户调整的优先级
 }
 
-// 步骤2: 推荐策略
+// 步骤2: 推荐策略 - 精致化重设计
 export interface StrategyConfig {
-  id: 'trend' | 'blueOcean' | 'highProfit';
+  id: 'trend' | 'blueOcean' | 'premium';
   name: string;
+  tagline: string;           // 策略标语
   description: string;
   isSelected: boolean;
+  coreAdvantages: string[];  // 核心优势（3个）
+  targetUsers: string[];     // 适用人群
+  characteristics: {         // 策略特征
+    difficulty: string;      // 上手难度
+    timeframe: string;       // 见效周期
+    riskLevel: string;       // 风险等级
+    profitLevel: string;     // 利润水平
+  };
+  recommendedKeywords: {     // 推荐关键词（策略关联）
+    keyword: string;
+    heat: number;
+    competition: number;
+    type: string;            // 关键词类型
+    reason: string;          // 推荐理由
+  }[];
   params: {
     growthThreshold: number;
     competitionThreshold: number;
@@ -39,6 +55,17 @@ export interface KeywordData {
   competition: number;   // 竞争度
   isSelected: boolean;
   priority: number;      // 用户调整的优先级
+  type?: string;         // 关键词类型（可选）
+  attributes?: {         // 产品属性（可选）
+    audience: string[];  // 目标人群
+    season: string[];    // 适用季节
+    size: string[];      // 尺寸规格
+    material: string[];  // 材质
+    style: string[];     // 风格
+  };
+  tags?: string[];       // 描述标签
+  strategy?: string;     // 所属策略
+  reason?: string;       // 推荐理由
 }
 
 export interface SelectionParams {

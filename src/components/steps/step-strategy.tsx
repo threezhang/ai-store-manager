@@ -2,69 +2,69 @@
 
 import { useState } from 'react'
 import { useStore } from '@/lib/store'
-import { mockStrategies } from '@/lib/mock-data'
-import { TrendingUp, Search, DollarSign, ChevronRight, Settings } from 'lucide-react'
+import { mockStrategies, getRecommendedKeywordsByCategory } from '@/lib/mock-data'
+import { cn } from '@/lib/utils'
+import { 
+  TrendingUp, Search, Crown, ArrowRight, 
+  Lightbulb, Target, Shield, CheckCircle2, Clock,
+  BarChart3, Users, Settings, Zap
+} from 'lucide-react'
 import type { StrategyConfig } from '@/lib/types'
 
 const strategyIcons = {
   trend: TrendingUp,
   blueOcean: Search,
-  highProfit: DollarSign
+  premium: Crown
 }
 
 const strategyColors = {
-  trend: '#ef4444', // 红色
-  blueOcean: '#3b82f6', // 蓝色
-  highProfit: '#10b981' // 绿色
+  trend: {
+    primary: '#ef4444',
+    light: '#fef2f2',
+    border: '#fca5a5'
+  },
+  blueOcean: {
+    primary: '#3b82f6',
+    light: '#eff6ff',
+    border: '#93c5fd'
+  },
+  premium: {
+    primary: '#10b981',
+    light: '#f0fdf4',
+    border: '#86efac'
+  }
 }
 
 export default function StepStrategy() {
   const { selectedCategories, selectedStrategies, updateStrategies, setCurrentStep, canProceedToNextStep } = useStore()
   const [strategies, setStrategies] = useState<StrategyConfig[]>(mockStrategies)
-  const [showAdvanced, setShowAdvanced] = useState<string | null>(null)
+  const [selectedStrategyId, setSelectedStrategyId] = useState<string | null>(
+    selectedStrategies.length > 0 ? selectedStrategies[0].id : null
+  )
 
   // 处理策略选择
-  const handleStrategyToggle = (strategyId: string) => {
-    const updatedStrategies = strategies.map(strategy => {
-      if (strategy.id === strategyId) {
-        return { ...strategy, isSelected: !strategy.isSelected }
-      }
-      return strategy
-    })
-    
-    // 限制最多选择3个策略
-    const selectedCount = updatedStrategies.filter(s => s.isSelected).length
-    if (selectedCount > 3) {
-      alert('最多可选择3个策略')
-      return
-    }
+  const handleStrategySelect = (strategyId: string) => {
+    const updatedStrategies = strategies.map(strategy => ({
+      ...strategy,
+      isSelected: strategy.id === strategyId
+    }))
     
     setStrategies(updatedStrategies)
+    setSelectedStrategyId(strategyId)
     updateStrategies(updatedStrategies.filter(s => s.isSelected))
   }
 
-  // 处理参数调整
-  const handleParamChange = (strategyId: string, paramName: string, value: number) => {
-    const updatedStrategies = strategies.map(strategy => {
-      if (strategy.id === strategyId) {
-        return {
-          ...strategy,
-          params: {
-            ...strategy.params,
-            [paramName]: value
-          }
-        }
-      }
-      return strategy
-    })
-    setStrategies(updatedStrategies)
-    updateStrategies(updatedStrategies.filter(s => s.isSelected))
-  }
-
-  // 处理下一步
+  // 处理下一步 - 优化产品流程
   const handleNext = () => {
     if (canProceedToNextStep()) {
-      setCurrentStep(3)
+      setCurrentStep(3) // 进入关键词精细化配置
+    }
+  }
+
+  // 快速启动选品 - 跳过关键词配置
+  const handleQuickStart = () => {
+    if (canProceedToNextStep()) {
+      setCurrentStep(4) // 直接进入AI推荐
     }
   }
 
@@ -73,276 +73,289 @@ export default function StepStrategy() {
     setCurrentStep(1)
   }
 
+  const selectedStrategy = strategies.find(s => s.id === selectedStrategyId)
+
   return (
-    <div style={{ animation: 'fadeIn 0.5s ease-in-out' }}>
-      {/* 页面标题 */}
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>选择经营策略</h1>
-        <p style={{ color: '#4b5563' }}>
+    <div className="page-layout page-enter">
+      {/* 保持统一的页面标题 */}
+      <div className="page-header">
+        <h1 className="page-title">选择经营策略</h1>
+        <p className="page-description">
           针对您选择的
-          <span style={{ fontWeight: '600', color: 'var(--primary)', marginLeft: '0.25rem', marginRight: '0.25rem' }}>
+          <span className="font-semibold text-primary mx-1">
             {selectedCategories.map(cat => cat.name).join('、')}
           </span>
-          类目，推荐以下策略
+          类目，为您推荐3种精准策略，每种策略包含专属关键词
         </p>
       </div>
 
-      {/* 策略卡片 */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-        gap: '1.5rem', 
-        marginBottom: '2rem' 
-      }}>
-        {strategies.map((strategy) => {
-          const Icon = strategyIcons[strategy.id]
-          const colorValue = strategyColors[strategy.id]
-          
-          return (
-            <div key={strategy.id}>
+      <div className="page-content">
+        {/* 保持一致的AI推荐样式 */}
+        <div className="ai-recommendation-simple content-section">
+          <Lightbulb className="ai-icon" />
+          <div className="ai-recommendation-content">
+            <span className="ai-badge">AI 策略工场</span>
+            每种策略都有独特的关键词推荐逻辑，选择策略后可直接查看对应的精准关键词，
+            让您的选品决策更加明确和高效。
+          </div>
+        </div>
+
+        {/* 统一的策略卡片网格 */}
+        <div className="strategy-cards-consistent-grid content-section">
+          {strategies.map((strategy, index) => {
+            const Icon = strategyIcons[strategy.id]
+            const colors = strategyColors[strategy.id]
+            const isSelected = selectedStrategyId === strategy.id
+            
+            return (
               <div
-                onClick={() => handleStrategyToggle(strategy.id)}
-                style={{
-                  position: 'relative',
-                  backgroundColor: strategy.isSelected ? '#eff6ff' : 'var(--card)',
-                  borderRadius: '0.75rem',
-                  boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-                  border: strategy.isSelected ? '2px solid var(--primary)' : '1px solid var(--border)',
-                  padding: '1.5rem',
-                  height: '100%',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  if (!strategy.isSelected) {
-                    e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!strategy.isSelected) {
-                    e.currentTarget.style.boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }
-                }}
+                key={strategy.id}
+                className={cn(
+                  'strategy-card-consistent card-enter',
+                  isSelected && 'selected'
+                )}
+                style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => handleStrategySelect(strategy.id)}
               >
-                {/* 图标和标题 */}
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                  <div style={{ 
-                    padding: '0.75rem', 
-                    borderRadius: '0.5rem', 
-                    backgroundColor: '#f9fafb', 
-                    marginRight: '0.75rem',
-                    color: colorValue
-                  }}>
-                    <Icon style={{ width: '1.5rem', height: '1.5rem' }} />
+                {/* 策略卡片头部 */}
+                <div className="strategy-card-consistent-header">
+                  <div className="strategy-title-row-consistent">
+                    <div 
+                      className="strategy-icon-consistent"
+                      style={{ 
+                        backgroundColor: colors.light,
+                        color: colors.primary 
+                      }}
+                    >
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <div className="strategy-info-consistent">
+                      <h3 className="strategy-name-consistent">{strategy.name}</h3>
+                      <p className="strategy-tagline-consistent" style={{ color: colors.primary }}>
+                        {strategy.tagline}
+                      </p>
+                    </div>
+                    {isSelected && (
+                      <div className="selected-indicator-consistent">
+                        <CheckCircle2 className="w-6 h-6" style={{ color: colors.primary }} />
+                      </div>
+                    )}
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>{strategy.name}</h3>
-                </div>
 
-                {/* 描述 */}
-                <p style={{ color: '#4b5563', marginBottom: '1rem' }}>{strategy.description}</p>
+                  <p className="strategy-description-consistent">{strategy.description}</p>
 
-                {/* 默认参数预览 */}
-                <div style={{ 
-                  backgroundColor: '#f9fafb', 
-                  borderRadius: '0.5rem', 
-                  padding: '0.75rem', 
-                  marginBottom: '1rem' 
-                }}>
-                  <div style={{ fontSize: '0.875rem', color: '#4b5563' }}>
-                    <div style={{ marginBottom: '0.25rem' }}>增长率阈值：≥{strategy.params.growthThreshold}%</div>
-                    <div style={{ marginBottom: '0.25rem' }}>竞争度阈值：≤{strategy.params.competitionThreshold}</div>
-                    <div>利润率阈值：≥{strategy.params.profitThreshold}%</div>
+                  {/* 策略特征 */}
+                  <div className="strategy-characteristics-consistent">
+                    <div className="characteristic-item-consistent">
+                      <Clock className="w-4 h-4" />
+                      <span>{strategy.characteristics.timeframe}</span>
+                    </div>
+                    <div className="characteristic-item-consistent">
+                      <BarChart3 className="w-4 h-4" />
+                      <span>{strategy.characteristics.profitLevel}</span>
+                    </div>
+                    <div className="characteristic-item-consistent">
+                      <Shield className="w-4 h-4" />
+                      <span>{strategy.characteristics.difficulty}</span>
+                    </div>
+                  </div>
+
+                  {/* 核心优势标签 */}
+                  <div className="core-advantages-consistent">
+                    {strategy.coreAdvantages.map((advantage, idx) => (
+                      <span 
+                        key={idx}
+                        className="advantage-tag-consistent"
+                        style={{ 
+                          backgroundColor: colors.light,
+                          color: colors.primary,
+                          border: `1px solid ${colors.border}`
+                        }}
+                      >
+                        {advantage}
+                      </span>
+                    ))}
                   </div>
                 </div>
+              </div>
+            )
+          })}
+        </div>
 
-                {/* 高级设置按钮 */}
-                {strategy.isSelected && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setShowAdvanced(showAdvanced === strategy.id ? null : strategy.id)
-                    }}
-                    style={{
-                      color: 'var(--primary)',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      display: 'flex',
-                      alignItems: 'center',
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      cursor: 'pointer'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.textDecoration = 'underline';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.textDecoration = 'none';
+        {/* 统一风格的策略详情展示区域 */}
+        {selectedStrategy && (
+          <div className="strategy-detail-consistent-section content-section">
+            <div className="strategy-detail-consistent-card">
+              <div className="strategy-detail-consistent-header">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="strategy-detail-consistent-icon"
+                    style={{ 
+                      backgroundColor: strategyColors[selectedStrategy.id].light,
+                      color: strategyColors[selectedStrategy.id].primary
                     }}
                   >
-                    <Settings style={{ width: '1rem', height: '1rem', marginRight: '0.25rem' }} />
-                    高级设置
-                  </button>
-                )}
-
-                {/* 选中状态指示 */}
-                {strategy.isSelected && (
-                  <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-                    <div style={{ 
-                      width: '1.5rem', 
-                      height: '1.5rem', 
-                      backgroundColor: 'var(--primary)', 
-                      borderRadius: '9999px', 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center' 
-                    }}>
-                      <span style={{ color: 'white', fontSize: '0.875rem' }}>✓</span>
-                    </div>
+                    {(() => {
+                      const Icon = strategyIcons[selectedStrategy.id]
+                      return <Icon className="w-6 h-6" />
+                    })()}
                   </div>
-                )}
+                  <div>
+                    <h3 className="strategy-detail-consistent-title">{selectedStrategy.name} 策略详情</h3>
+                    <p className="strategy-detail-consistent-subtitle">查看完整的策略配置和推荐关键词</p>
+                  </div>
+                </div>
               </div>
 
-              {/* 高级设置面板 */}
-              {showAdvanced === strategy.id && strategy.isSelected && (
-                <div style={{ 
-                  marginTop: '1rem', 
-                  backgroundColor: 'var(--card)',
-                  borderRadius: '0.75rem',
-                  boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-                  border: '1px solid var(--border)',
-                  padding: '1.5rem',
-                  animation: 'slideUp 0.3s ease-out'
-                }}>
-                  <h4 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.75rem' }}>参数微调</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div>
-                      <label style={{ fontSize: '0.875rem', color: '#4b5563', display: 'block', marginBottom: '0.25rem' }}>
-                        最低增长率 ({strategy.params.growthThreshold}%)
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={strategy.params.growthThreshold}
-                        onChange={(e) => handleParamChange(strategy.id, 'growthThreshold', Number(e.target.value))}
-                        style={{ width: '100%' }}
-                      />
+              <div className="strategy-detail-consistent-content">
+                {/* 关键词预览区 */}
+                <div className="detail-section-consistent">
+                  <div className="detail-section-consistent-header">
+                    <Target className="w-5 h-5 text-primary" />
+                    <h4 className="detail-section-consistent-title">推荐关键词 ({(() => {
+                      const categoryIds = selectedCategories.map(cat => cat.id)
+                      const dynamicKeywords = getRecommendedKeywordsByCategory(categoryIds, selectedStrategy.id)
+                      return dynamicKeywords.length > 0 ? dynamicKeywords.length : selectedStrategy.recommendedKeywords.length
+                    })()}个)</h4>
+                  </div>
+                  <div className="keywords-consistent-grid">
+                    {(() => {
+                      const categoryIds = selectedCategories.map(cat => cat.id)
+                      const dynamicKeywords = getRecommendedKeywordsByCategory(categoryIds, selectedStrategy.id)
+                      const keywordsToShow = dynamicKeywords.length > 0 ? dynamicKeywords : selectedStrategy.recommendedKeywords
+                      
+                      return keywordsToShow.map((kw, idx) => (
+                        <div key={idx} className="keyword-consistent-card">
+                          <div className="keyword-consistent-header">
+                            <span className="keyword-consistent-name">{kw.keyword}</span>
+                            <span 
+                              className="keyword-consistent-type"
+                              style={{ 
+                                backgroundColor: strategyColors[selectedStrategy.id].light,
+                                color: strategyColors[selectedStrategy.id].primary 
+                              }}
+                            >
+                              {kw.type || (selectedStrategy.id === 'trend' ? '热搜词' : selectedStrategy.id === 'blueOcean' ? '长尾词' : '高端词')}
+                            </span>
+                          </div>
+                          <div className="keyword-consistent-metrics">
+                            <div className="keyword-metric-consistent">
+                              <TrendingUp className="w-3 h-3" />
+                              <span>热度 {kw.heat}</span>
+                            </div>
+                            <div className="keyword-metric-consistent">
+                              <Shield className="w-3 h-3" />
+                              <span>竞争 {kw.competition}</span>
+                            </div>
+                          </div>
+                          <div className="keyword-consistent-reason">{kw.reason}</div>
+                        </div>
+                      ))
+                    })()}
+                  </div>
+                </div>
+
+                {/* 两列布局：适用人群和策略参数 */}
+                <div className="detail-sections-consistent-row">
+                  <div className="detail-section-consistent">
+                    <div className="detail-section-consistent-header">
+                      <Users className="w-5 h-5 text-secondary" />
+                      <h4 className="detail-section-consistent-title">适用人群</h4>
                     </div>
-                    <div>
-                      <label style={{ fontSize: '0.875rem', color: '#4b5563', display: 'block', marginBottom: '0.25rem' }}>
-                        最高竞争度 ({strategy.params.competitionThreshold})
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={strategy.params.competitionThreshold}
-                        onChange={(e) => handleParamChange(strategy.id, 'competitionThreshold', Number(e.target.value))}
-                        style={{ width: '100%' }}
-                      />
+                    <div className="detail-tags-consistent">
+                      {selectedStrategy.targetUsers.map((user, idx) => (
+                        <span key={idx} className="detail-tag-consistent">
+                          {user}
+                        </span>
+                      ))}
                     </div>
-                    <div>
-                      <label style={{ fontSize: '0.875rem', color: '#4b5563', display: 'block', marginBottom: '0.25rem' }}>
-                        最低利润率 ({strategy.params.profitThreshold}%)
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={strategy.params.profitThreshold}
-                        onChange={(e) => handleParamChange(strategy.id, 'profitThreshold', Number(e.target.value))}
-                        style={{ width: '100%' }}
-                      />
+                  </div>
+
+                  <div className="detail-section-consistent">
+                    <div className="detail-section-consistent-header">
+                      <Settings className="w-5 h-5 text-tertiary" />
+                      <h4 className="detail-section-consistent-title">策略参数</h4>
+                    </div>
+                    <div className="strategy-params-consistent-grid">
+                      <div className="param-consistent-item">
+                        <div className="param-consistent-label">最低增长率</div>
+                        <div className="param-consistent-value">≥{selectedStrategy.params.growthThreshold}%</div>
+                      </div>
+                      <div className="param-consistent-item">
+                        <div className="param-consistent-label">最高竞争度</div>
+                        <div className="param-consistent-value">≤{selectedStrategy.params.competitionThreshold}</div>
+                      </div>
+                      <div className="param-consistent-item">
+                        <div className="param-consistent-label">最低利润率</div>
+                        <div className="param-consistent-value">≥{selectedStrategy.params.profitThreshold}%</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          )
-        })}
+          </div>
+        )}
+
+        {/* 统一的策略说明 */}
+        <div className="info-banner content-section">
+          <p className="info-banner-text">
+            <span className="font-semibold">选择说明：</span>
+            建议选择一种最适合的策略深度执行。每种策略的关键词推荐逻辑不同，
+            确定策略后，AI将基于该策略为您推荐精准商品。
+          </p>
+        </div>
       </div>
 
-      {/* 提示信息 */}
-      <div style={{ 
-        backgroundColor: '#eff6ff', 
-        borderLeft: '4px solid var(--primary)', 
-        padding: '1rem', 
-        marginBottom: '1.5rem' 
-      }}>
-        <p style={{ fontSize: '0.875rem', color: '#374151' }}>
-          <strong>提示：</strong>您可以选择1-3个策略组合使用。不同策略会影响后续的关键词推荐和商品筛选逻辑。
-        </p>
-      </div>
-
-      {/* 操作按钮 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* 统一的页面底部操作区 */}
+      <div className="page-footer">
         <button
           onClick={handlePrev}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0.5rem 1rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            borderRadius: '0.5rem',
-            transition: 'all 0.2s ease',
-            cursor: 'pointer',
-            backgroundColor: 'white',
-            color: '#374151',
-            border: '1px solid var(--border)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#f9fafb';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'white';
-          }}
+          className="btn btn-secondary btn-lg"
         >
           上一步
         </button>
-        <div style={{ fontSize: '0.875rem', color: '#4b5563' }}>
-          已选择 <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>{selectedStrategies.length}</span> 个策略
+        
+        <div className="status-indicator">
+          <div className={cn(
+            'status-dot',
+            selectedStrategy ? 'status-success' : 'status-warning'
+          )}></div>
+          <span className="text-sm">
+            {selectedStrategy ? (
+              <>
+                已选择 <span className="font-semibold text-primary">{selectedStrategy.name}</span> 策略
+              </>
+            ) : (
+              <span className="text-tertiary">请选择一种经营策略</span>
+            )}
+          </span>
         </div>
-        <button
-          onClick={handleNext}
-          disabled={!canProceedToNextStep()}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0.5rem 1rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            borderRadius: '0.5rem',
-            transition: 'all 0.2s ease',
-            cursor: canProceedToNextStep() ? 'pointer' : 'not-allowed',
-            backgroundColor: 'var(--primary)',
-            color: 'white',
-            border: 'none',
-            opacity: canProceedToNextStep() ? 1 : 0.5
-          }}
-          onMouseEnter={(e) => {
-            if (canProceedToNextStep()) {
-              e.currentTarget.style.backgroundColor = 'var(--primary-dark)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (canProceedToNextStep()) {
-              e.currentTarget.style.backgroundColor = 'var(--primary)';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }
-          }}
-        >
-          下一步：配置关键词
-          <ChevronRight style={{ width: '1rem', height: '1rem', marginLeft: '0.25rem' }} />
-        </button>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleQuickStart}
+            disabled={!canProceedToNextStep()}
+            className={cn(
+              'btn btn-accent btn-lg',
+              'inline-flex items-center gap-2'
+            )}
+          >
+            <Zap className="w-4 h-4" />
+            快速启动
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={!canProceedToNextStep()}
+            className={cn(
+              'btn btn-primary btn-lg',
+              'inline-flex items-center gap-2'
+            )}
+          >
+            精细配置
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   )
