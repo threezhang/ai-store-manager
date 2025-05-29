@@ -2,14 +2,21 @@
 export interface CategoryData {
   id: string;
   name: string;
-  isRecommended: boolean;  // 系统强推标记
-  isSelected: boolean;     // 用户选择状态
+  description: string;       // 类目描述
+  isRecommended: boolean;    // 系统强推标记
+  isSelected: boolean;       // 用户选择状态
+  category: 'hot' | 'potential' | 'other'; // 类目分类
   metrics: {
-    salesGrowth: number;   // 销量环比
-    industryGrowth: number; // 行业增速
-    profitMargin: number;  // 平均利润率
+    salesGrowth: number;     // 销量环比
+    industryGrowth: number;  // 行业增速
+    profitMargin: number;    // 平均利润率
+    recommendScore: number;  // AI推荐指数 0-100
+    competitionLevel: number; // 竞争激烈度 1-5 (1最低,5最高)
+    difficultyLevel: number; // 入门难度 1-5 (1最容易,5最难)
+    marketSize: number;      // 市场规模(万)
+    avgProfit: number;       // 平均利润率
   };
-  priority?: number;       // 用户调整的优先级
+  priority?: number;         // 用户调整的优先级
 }
 
 // 步骤2: 推荐策略

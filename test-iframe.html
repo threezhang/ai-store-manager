@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI店长 0.2 - 设计系统展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        .frame-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .left-sidebar {
+            width: 240px;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            margin-right: 20px;
+            color: white;
+        }
+        
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+        
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .status-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .version-badge {
+            background: #2563eb;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="frame-container">
+        <!-- 模拟 0.1 版本侧边栏 -->
+        <div class="left-sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">AI</div>
+                <div>
+                    <div style="font-weight: 600;">AI店长</div>
+                    <div style="font-size: 12px; color: #64748b;">智能分销管理平台</div>
+                </div>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li><a href="#"><span>📊</span> 数据概览</a></li>
+                <li><a href="#" class="active"><span>🤖</span> AI托管</a></li>
+                <li><a href="#"><span>📦</span> 商品管理</a></li>
+                <li><a href="#"><span>📈</span> 数据分析</a></li>
+                <li><a href="#"><span>📋</span> 订单管理</a></li>
+                <li><a href="#"><span>❓</span> 帮助中心</a></li>
+                <li><a href="#"><span>⚙️</span> 系统设置</a></li>
+            </ul>
+        </div>
+        
+        <!-- 主内容区（嵌入 0.2 版本） -->
+        <div class="main-content">
+            <iframe 
+                src="http://localhost:3001" 
+                class="iframe-container"
+                title="AI店长 0.2 版本">
+            </iframe>
+        </div>
+    </div>
+    
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span class="version-badge">v0.2</span>
+        新版本加载中... iframe集成演示
+    </div>
+    
+    <script>
+        // 动态调整iframe高度
+        function adjustIframeHeight() {
+            const iframe = document.querySelector('.iframe-container');
+            if (iframe) {
+                iframe.style.height = '100%';
+            }
+        }
+        
+        // 监听iframe加载事件
+        document.querySelector('.iframe-container').addEventListener('load', function() {
+            adjustIframeHeight();
+            document.querySelector('.status-bar').innerHTML = 
+                '<span class="version-badge">v0.2</span> 新版本已加载完成';
+            
+            // 3秒后隐藏状态栏
+            setTimeout(() => {
+                document.querySelector('.status-bar').style.opacity = '0';
+                setTimeout(() => {
+                    document.querySelector('.status-bar').style.display = 'none';
+                }, 300);
+            }, 3000);
+        });
+        
+        // 页面加载完成后调整
+        window.addEventListener('load', adjustIframeHeight);
+        window.addEventListener('resize', adjustIframeHeight);
+    </script>
+</body>
+</html> 

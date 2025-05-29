@@ -3,59 +3,225 @@ import { generateId } from './utils'
 
 // Mock类目数据
 export const mockCategories: CategoryData[] = [
+  // 热门推荐类目
   {
     id: 'cat-1',
     name: '日用餐厨',
+    description: '厨房用品、餐具、收纳等日常必需品',
     isRecommended: true,
-    isSelected: true, // 系统强推默认选中
+    isSelected: true,
+    category: 'hot',
     metrics: {
       salesGrowth: 68.5,
       industryGrowth: 42.3,
-      profitMargin: 35.8
+      profitMargin: 35.8,
+      recommendScore: 95, // 推荐指数
+      competitionLevel: 3, // 竞争激烈度 1-5
+      difficultyLevel: 2, // 入门难度 1-5
+      marketSize: 8.5, // 市场规模(万)
+      avgProfit: 28.5 // 平均利润率
     }
   },
   {
     id: 'cat-2',
     name: '居家收纳',
+    description: '收纳盒、整理架、储物用品',
     isRecommended: true,
     isSelected: false,
+    category: 'hot',
     metrics: {
       salesGrowth: 55.2,
       industryGrowth: 38.7,
-      profitMargin: 42.1
+      profitMargin: 42.1,
+      recommendScore: 92,
+      competitionLevel: 2,
+      difficultyLevel: 1,
+      marketSize: 6.8,
+      avgProfit: 32.1
     }
   },
   {
     id: 'cat-3',
     name: '个护清洁',
+    description: '洗漱用品、清洁工具、个人护理',
     isRecommended: true,
     isSelected: false,
+    category: 'hot',
     metrics: {
       salesGrowth: 48.9,
       industryGrowth: 35.4,
-      profitMargin: 38.5
+      profitMargin: 38.5,
+      recommendScore: 88,
+      competitionLevel: 3,
+      difficultyLevel: 2,
+      marketSize: 5.2,
+      avgProfit: 26.8
     }
   },
+  
+  // 高潜力类目
   {
     id: 'cat-4',
     name: '运动户外',
+    description: '健身器材、户外用品、运动配件',
     isRecommended: false,
     isSelected: false,
+    category: 'potential',
     metrics: {
       salesGrowth: 72.3,
       industryGrowth: 56.8,
-      profitMargin: 28.9
+      profitMargin: 28.9,
+      recommendScore: 78,
+      competitionLevel: 4,
+      difficultyLevel: 3,
+      marketSize: 12.3,
+      avgProfit: 22.5
     }
   },
   {
     id: 'cat-5',
     name: '母婴用品',
+    description: '婴儿用品、儿童玩具、母婴护理',
     isRecommended: false,
     isSelected: false,
+    category: 'potential',
     metrics: {
       salesGrowth: 45.6,
       industryGrowth: 41.2,
-      profitMargin: 48.5
+      profitMargin: 48.5,
+      recommendScore: 85,
+      competitionLevel: 4,
+      difficultyLevel: 4,
+      marketSize: 15.6,
+      avgProfit: 35.2
+    }
+  },
+  {
+    id: 'cat-6',
+    name: '宠物用品',
+    description: '宠物食品、玩具、护理用品',
+    isRecommended: false,
+    isSelected: false,
+    category: 'potential',
+    metrics: {
+      salesGrowth: 82.1,
+      industryGrowth: 67.3,
+      profitMargin: 52.8,
+      recommendScore: 89,
+      competitionLevel: 3,
+      difficultyLevel: 2,
+      marketSize: 9.8,
+      avgProfit: 41.2
+    }
+  },
+  
+  // 其他类目
+  {
+    id: 'cat-7',
+    name: '汽车用品',
+    description: '汽车配件、装饰、清洁保养',
+    isRecommended: false,
+    isSelected: false,
+    category: 'other',
+    metrics: {
+      salesGrowth: 35.8,
+      industryGrowth: 28.4,
+      profitMargin: 45.2,
+      recommendScore: 65,
+      competitionLevel: 4,
+      difficultyLevel: 4,
+      marketSize: 18.9,
+      avgProfit: 38.6
+    }
+  },
+  {
+    id: 'cat-8',
+    name: '数码配件',
+    description: '手机配件、电脑周边、智能设备',
+    isRecommended: false,
+    isSelected: false,
+    category: 'other',
+    metrics: {
+      salesGrowth: 28.6,
+      industryGrowth: 22.1,
+      profitMargin: 32.4,
+      recommendScore: 58,
+      competitionLevel: 5,
+      difficultyLevel: 5,
+      marketSize: 25.6,
+      avgProfit: 25.8
+    }
+  },
+  {
+    id: 'cat-9',
+    name: '服装配饰',
+    description: '服装、鞋帽、包包、饰品',
+    isRecommended: false,
+    isSelected: false,
+    category: 'other',
+    metrics: {
+      salesGrowth: 42.3,
+      industryGrowth: 31.5,
+      profitMargin: 55.8,
+      recommendScore: 72,
+      competitionLevel: 5,
+      difficultyLevel: 4,
+      marketSize: 32.4,
+      avgProfit: 42.8
+    }
+  },
+  {
+    id: 'cat-10',
+    name: '美妆护肤',
+    description: '化妆品、护肤品、美容工具',
+    isRecommended: false,
+    isSelected: false,
+    category: 'other',
+    metrics: {
+      salesGrowth: 38.9,
+      industryGrowth: 29.7,
+      profitMargin: 62.1,
+      recommendScore: 68,
+      competitionLevel: 5,
+      difficultyLevel: 5,
+      marketSize: 28.7,
+      avgProfit: 48.5
+    }
+  },
+  {
+    id: 'cat-11',
+    name: '办公文具',
+    description: '办公用品、文具、学习用品',
+    isRecommended: false,
+    isSelected: false,
+    category: 'other',
+    metrics: {
+      salesGrowth: 25.4,
+      industryGrowth: 18.9,
+      profitMargin: 38.6,
+      recommendScore: 52,
+      competitionLevel: 3,
+      difficultyLevel: 2,
+      marketSize: 8.9,
+      avgProfit: 28.4
+    }
+  },
+  {
+    id: 'cat-12',
+    name: '园艺花卉',
+    description: '植物、花盆、园艺工具',
+    isRecommended: false,
+    isSelected: false,
+    category: 'other',
+    metrics: {
+      salesGrowth: 52.8,
+      industryGrowth: 45.6,
+      profitMargin: 48.9,
+      recommendScore: 76,
+      competitionLevel: 2,
+      difficultyLevel: 3,
+      marketSize: 4.5,
+      avgProfit: 35.8
     }
   }
 ]

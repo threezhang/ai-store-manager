@@ -105,7 +105,7 @@ export const useStore = create<AppState>()(
         const state = get()
         switch (state.currentStep) {
           case 1:
-            return state.selectedCategories.length > 0
+            return state.selectedCategories.length > 0 && state.selectedCategories.length <= 3
           case 2:
             return state.selectedStrategies.length > 0 && state.selectedStrategies.length <= 3
           case 3:
