@@ -1,14 +1,12 @@
 'use client'
 
 import { useStore } from '@/lib/store'
-import { Check } from 'lucide-react'
+import { Check, Zap } from 'lucide-react'
 
 const steps = [
-  { id: 1, name: '推荐类目', description: '选择经营类目' },
-  { id: 2, name: '推荐策略', description: '确定选品策略' },
-  { id: 3, name: '关键词配置', description: '设置筛选条件' },
-  { id: 4, name: 'AI推荐', description: '智能商品推荐' },
-  { id: 5, name: '铺货队列', description: '批量上架商品' }
+  { id: 1, name: '选择类目', description: '确定经营类目方向' },
+  { id: 2, name: '策略配置', description: '选择策略并配置关键词' },
+  { id: 3, name: 'AI推荐', description: '智能商品推荐' }
 ]
 
 export default function StepNavigation() {
@@ -23,14 +21,31 @@ export default function StepNavigation() {
 
   return (
     <div className="bg-card border-b border-border shadow-sm">
-      <div className="px-8 py-6">
+      <div className="px-6 py-4">
+        {/* 顶部信息行 */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-primary" />
+              <span className="font-semibold text-foreground">AI智能选品</span>
+              <span className="bg-primary text-white px-2 py-0.5 rounded text-xs font-medium">v0.3</span>
+            </div>
+            <div className="text-sm text-muted">三步闭环，精准营销</div>
+          </div>
+          
+          <div className="flex items-center text-sm text-muted">
+            <span>步骤 {currentStep}/3</span>
+          </div>
+        </div>
+
+        {/* 步骤导航 */}
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center flex-1">
               <button
                 onClick={() => handleStepClick(step.id)}
                 className={`
-                  flex flex-col items-center text-center transition-all duration-300
+                  flex items-center gap-3 text-left transition-all duration-300 group
                   ${step.id > currentStep ? 'opacity-50 hover:opacity-70' : 'opacity-100'}
                   ${(step.id < currentStep || (step.id === currentStep + 1 && canProceedToNextStep())) 
                     ? 'cursor-pointer' 
@@ -40,7 +55,7 @@ export default function StepNavigation() {
               >
                 <div 
                   className={`
-                    w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 mb-2
+                    w-8 h-8 rounded-full flex items-center justify-center font-medium text-sm transition-all duration-300
                     ${currentStep === step.id 
                       ? 'bg-primary text-white shadow-md transform scale-110' 
                       : step.id < currentStep 
@@ -50,15 +65,16 @@ export default function StepNavigation() {
                   `}
                 >
                   {step.id < currentStep ? (
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4" />
                   ) : (
                     step.id
                   )}
                 </div>
-                <div>
-                  <span 
+                
+                <div className="flex-1 min-w-0">
+                  <div 
                     className={`
-                      text-sm font-medium block
+                      text-sm font-medium
                       ${currentStep === step.id 
                         ? 'text-primary' 
                         : step.id < currentStep 
@@ -67,16 +83,15 @@ export default function StepNavigation() {
                     `}
                   >
                     {step.name}
-                  </span>
-                  <span 
+                  </div>
+                  <div 
                     className={`
-                      text-xs mt-0.5 block
+                      text-xs mt-0.5 step-description
                       ${currentStep === step.id ? 'text-foreground' : 'text-muted'}
-                      step-description
                     `}
                   >
                     {step.description}
-                  </span>
+                  </div>
                 </div>
               </button>
               
@@ -85,7 +100,7 @@ export default function StepNavigation() {
                 <div className="flex-1 mx-4 step-connector">
                   <div 
                     className={`
-                      h-1 rounded-full transition-all duration-500
+                      h-0.5 rounded-full transition-all duration-500
                       ${step.id < currentStep ? 'bg-success' : 'bg-border'}
                     `} 
                   />

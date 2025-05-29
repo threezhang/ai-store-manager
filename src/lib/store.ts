@@ -10,51 +10,68 @@ const initialParams: SelectionParams = {
   profitMargin: 30
 }
 
-export const useStore = create<AppState>()(
+interface StoreState {
+  // 当前步骤 (1-3)
+  currentStep: number
+  setCurrentStep: (step: number) => void
+  
+  // 步骤1：类目选择
+  selectedCategories: CategoryData[]
+  updateCategories: (categories: CategoryData[]) => void
+  
+  // 步骤2：策略选择和关键词配置（合并）
+  selectedStrategies: StrategyConfig[]
+  updateStrategies: (strategies: StrategyConfig[]) => void
+  
+  keywords: KeywordData[]
+  updateKeywords: (keywords: KeywordData[]) => void
+  
+  // 步骤3：AI推荐
+  recommendations: ProductData[]
+  updateRecommendations: (recommendations: ProductData[]) => void
+  
+  // 业务数据
+  params: SelectionParams
+  recommendedProducts: ProductData[]
+  acceptedProducts: ProductData[]
+  listingLogs: ListingLog[]
+  
+  // 工具函数
+  canProceedToNextStep: () => boolean
+  resetStore: () => void
+}
+
+export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
-      // 流程控制
+      // 当前步骤
       currentStep: 1,
-      isLoading: false,
+      setCurrentStep: (step) => set({ currentStep: step }),
+      
+      // 类目选择
+      selectedCategories: mockCategories.filter(cat => cat.isSelected),
+      updateCategories: (categories) => set({ selectedCategories: categories }),
+      
+      // 策略选择
+      selectedStrategies: [],
+      updateStrategies: (strategies) => set({ selectedStrategies: strategies }),
+      
+      // 关键词
+      keywords: [],
+      updateKeywords: (keywords) => set({ keywords }),
+      
+      // AI推荐
+      recommendations: [],
+      updateRecommendations: (recommendations) => set({ recommendations }),
       
       // 业务数据
-      selectedCategories: mockCategories.filter(cat => cat.isSelected),
-      selectedStrategies: [],
-      keywords: [],
       params: initialParams,
       recommendedProducts: [],
       acceptedProducts: [],
       listingLogs: [],
       
       // 操作方法
-      setCurrentStep: (step: number) => set({ currentStep: step }),
-      
-      updateCategories: (categories: CategoryData[]) => {
-        set({ selectedCategories: categories })
-      },
-      
-      updateStrategies: (strategies: StrategyConfig[]) => {
-        set({ selectedStrategies: strategies })
-        
-        // 根据选中的策略更新默认参数
-        if (strategies.length > 0) {
-          const avgParams = strategies.reduce((acc, strategy) => ({
-            growthRate: acc.growthRate + strategy.params.growthThreshold / strategies.length,
-            competition: acc.competition + strategy.params.competitionThreshold / strategies.length,
-            profitMargin: acc.profitMargin + strategy.params.profitThreshold / strategies.length
-          }), { growthRate: 0, competition: 0, profitMargin: 0 })
-          
-          set({ params: avgParams })
-        }
-      },
-      
-      updateKeywords: (keywords: KeywordData[]) => {
-        set({ keywords })
-      },
-      
-      updateParams: (params: SelectionParams) => {
-        set({ params })
-      },
+      updateParams: (params: SelectionParams) => set({ params }),
       
       setRecommendedProducts: (products: ProductData[]) => {
         set({ recommendedProducts: products })
@@ -86,38 +103,33 @@ export const useStore = create<AppState>()(
         set({ listingLogs: logs })
       },
       
-      resetFlow: () => {
-        set({
-          currentStep: 1,
-          isLoading: false,
-          selectedCategories: mockCategories.filter(cat => cat.isSelected),
-          selectedStrategies: [],
-          keywords: [],
-          params: initialParams,
-          recommendedProducts: [],
-          acceptedProducts: [],
-          listingLogs: []
-        })
-      },
-      
-      // 计算属性
+      // 检查是否可以进入下一步
       canProceedToNextStep: () => {
         const state = get()
         switch (state.currentStep) {
           case 1:
-            return state.selectedCategories.length > 0 && state.selectedCategories.length <= 3
+            return state.selectedCategories.length > 0
           case 2:
-            return state.selectedStrategies.length > 0 && state.selectedStrategies.length <= 3
+            return state.selectedStrategies.length > 0 && state.keywords.some(kw => kw.isSelected)
           case 3:
-            return state.keywords.filter(k => k.isSelected).length > 0
-          case 4:
-            return state.acceptedProducts.length > 0
-          case 5:
             return true
           default:
             return false
         }
-      }
+      },
+      
+      // 重置状态
+      resetStore: () => set({
+        currentStep: 1,
+        selectedCategories: mockCategories.filter(cat => cat.isSelected),
+        selectedStrategies: [],
+        keywords: [],
+        recommendations: [],
+        params: initialParams,
+        recommendedProducts: [],
+        acceptedProducts: [],
+        listingLogs: []
+      })
     }),
     {
       name: 'ai-store-manager',

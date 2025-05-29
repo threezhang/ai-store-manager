@@ -4,9 +4,7 @@ import { useStore } from '@/lib/store'
 import StepNavigation from '@/components/business/step-navigation'
 import StepCategory from '@/components/steps/step-category'
 import StepStrategy from '@/components/steps/step-strategy'
-import StepKeywords from '@/components/steps/step-keywords'
 import StepRecommendation from '@/components/steps/step-recommendation'
-import StepListing from '@/components/steps/step-listing'
 import Sidebar from '@/components/business/sidebar'
 
 export default function Home() {
@@ -25,52 +23,14 @@ export default function Home() {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* 顶部导航栏 */}
-        <header style={{ 
-          backgroundColor: 'var(--card)', 
-          borderBottom: '1px solid var(--border)',
-          padding: '1.5rem 2rem',
-          boxShadow: 'var(--shadow-sm)'
-        }}>
-          <div>
-            <h1 style={{ 
-              fontSize: '1.875rem', 
-              fontWeight: 'bold', 
-              color: 'var(--foreground)', 
-              margin: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}>
-              AI店长 
-              <span style={{ 
-                fontSize: '0.75rem', 
-                fontWeight: 'normal', 
-                color: 'white',
-                backgroundColor: 'var(--primary)',
-                padding: '0.125rem 0.5rem',
-                borderRadius: '9999px'
-              }}>v0.2</span>
-            </h1>
-            <p style={{ 
-              fontSize: '0.875rem', 
-              color: 'var(--muted)', 
-              marginTop: '0.375rem',
-              maxWidth: '36rem'
-            }}>
-              智能选品，精准营销，提升分销效率
-            </p>
-          </div>
-        </header>
-        
-        {/* 步骤导航 */}
+        {/* 合并的紧凑导航栏 */}
         <StepNavigation />
         
         {/* 主内容区 */}
         <main style={{ 
           flex: 1, 
           overflowY: 'auto', 
-          padding: '2rem',
+          padding: '1.5rem',
           backgroundColor: 'var(--background)'
         }}>
           <div style={{ 
@@ -78,12 +38,10 @@ export default function Home() {
             margin: '0 auto',
             animation: 'fadeIn 0.3s ease-out'
           }}>
-            {/* 根据当前步骤渲染对应组件 */}
+            {/* 根据当前步骤渲染对应组件 - 3步流程 */}
             {currentStep === 1 && <StepCategory />}
             {currentStep === 2 && <StepStrategy />}
-            {currentStep === 3 && <StepKeywords />}
-            {currentStep === 4 && <StepRecommendation />}
-            {currentStep === 5 && <StepListing />}
+            {currentStep === 3 && <StepRecommendation />}
           </div>
         </main>
       </div>

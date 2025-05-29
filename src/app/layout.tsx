@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className={`${inter.variable} antialiased`}>
         <div className="min-h-screen bg-background">
-          {children}
+        {children}
         </div>
       </body>
     </html>
