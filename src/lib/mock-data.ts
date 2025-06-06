@@ -265,7 +265,7 @@ export const mockStrategies: StrategyConfig[] = [
     name: '蓝海挖掘',
     tagline: '找空白，稳增长',
     description: 'AI算法深度挖掘低竞争细分市场，建立差异化竞争优势',
-    isSelected: false,
+    isSelected: true,
     coreAdvantages: ['竞争小', '利润稳定', '可持续'],
     targetUsers: ['有耐心卖家', '品牌化发展', '长期规划'],
     characteristics: {

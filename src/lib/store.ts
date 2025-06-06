@@ -10,8 +10,14 @@ const initialParams: SelectionParams = {
   profitMargin: 30
 }
 
+type PageType = 'selection' | 'dashboard' | 'products' | 'analytics' | 'history'
+
 interface StoreState {
-  // 当前步骤 (1-3)
+  // 当前页面状态
+  currentPage: PageType
+  setCurrentPage: (page: PageType) => void
+  
+  // 当前步骤 (1-5)
   currentStep: number
   setCurrentStep: (step: number) => void
   
@@ -32,18 +38,28 @@ interface StoreState {
   
   // 业务数据
   params: SelectionParams
+  updateParams: (params: SelectionParams) => void
   recommendedProducts: ProductData[]
+  setRecommendedProducts: (products: ProductData[]) => void
   acceptedProducts: ProductData[]
+  acceptProduct: (productId: string) => void
+  ignoreProduct: (productId: string) => void
   listingLogs: ListingLog[]
+  updateListingLogs: (logs: ListingLog[]) => void
   
   // 工具函数
   canProceedToNextStep: () => boolean
   resetStore: () => void
+  resetFlow: () => void
 }
 
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
+      // 当前页面
+      currentPage: 'selection',
+      setCurrentPage: (page) => set({ currentPage: page }),
+      
       // 当前步骤
       currentStep: 1,
       setCurrentStep: (step) => set({ currentStep: step }),
@@ -53,7 +69,7 @@ export const useStore = create<StoreState>()(
       updateCategories: (categories) => set({ selectedCategories: categories }),
       
       // 策略选择
-      selectedStrategies: [],
+      selectedStrategies: mockStrategies.filter(strategy => strategy.isSelected),
       updateStrategies: (strategies) => set({ selectedStrategies: strategies }),
       
       // 关键词
@@ -112,6 +128,10 @@ export const useStore = create<StoreState>()(
           case 2:
             return state.selectedStrategies.length > 0 && state.keywords.some(kw => kw.isSelected)
           case 3:
+            return state.acceptedProducts.length > 0
+          case 4:
+            return true // 上货配置完成即可进入下一步
+          case 5:
             return true
           default:
             return false
@@ -120,9 +140,22 @@ export const useStore = create<StoreState>()(
       
       // 重置状态
       resetStore: () => set({
+        currentPage: 'selection',
         currentStep: 1,
         selectedCategories: mockCategories.filter(cat => cat.isSelected),
-        selectedStrategies: [],
+        selectedStrategies: mockStrategies.filter(strategy => strategy.isSelected),
+        keywords: [],
+        recommendations: [],
+        params: initialParams,
+        recommendedProducts: [],
+        acceptedProducts: [],
+        listingLogs: []
+      }),
+      
+      resetFlow: () => set({
+        currentStep: 1,
+        selectedCategories: mockCategories.filter(cat => cat.isSelected),
+        selectedStrategies: mockStrategies.filter(strategy => strategy.isSelected),
         keywords: [],
         recommendations: [],
         params: initialParams,

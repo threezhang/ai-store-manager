@@ -5,10 +5,47 @@ import StepNavigation from '@/components/business/step-navigation'
 import StepCategory from '@/components/steps/step-category'
 import StepStrategy from '@/components/steps/step-strategy'
 import StepRecommendation from '@/components/steps/step-recommendation'
+import StepListingConfig from '@/components/steps/step-listing-config'
+import StepListing from '@/components/steps/step-listing'
 import Sidebar from '@/components/business/sidebar'
+import Dashboard from '@/components/pages/dashboard'
+import Products from '@/components/pages/products'
+import Analytics from '@/components/pages/analytics'
+import HistoryPage from '@/components/pages/history'
 
 export default function Home() {
-  const { currentStep, isLoading } = useStore()
+  const { currentStep, currentPage, isLoading } = useStore()
+
+  // 渲染当前页面内容
+  const renderPageContent = () => {
+    switch (currentPage) {
+      case 'dashboard':
+        return <Dashboard />
+      case 'products':
+        return <Products />
+      case 'analytics':
+        return <Analytics />
+      case 'history':
+        return <HistoryPage />
+      case 'selection':
+      default:
+        // 5步流程页面
+        switch (currentStep) {
+          case 1:
+            return <StepCategory />
+          case 2:
+            return <StepStrategy />
+          case 3:
+            return <StepRecommendation />
+          case 4:
+            return <StepListingConfig />
+          case 5:
+            return <StepListing />
+          default:
+            return <StepCategory />
+        }
+    }
+  }
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)', display: 'flex' }}>
@@ -23,25 +60,22 @@ export default function Home() {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* 合并的紧凑导航栏 */}
-        <StepNavigation />
+        {/* 只在选品流程页面显示步骤导航 */}
+        {currentPage === 'selection' && <StepNavigation />}
         
         {/* 主内容区 */}
         <main style={{ 
           flex: 1, 
           overflowY: 'auto', 
-          padding: '1.5rem',
+          padding: currentPage === 'selection' ? '1.5rem' : '0',
           backgroundColor: 'var(--background)'
         }}>
           <div style={{ 
-            maxWidth: '1200px', 
-            margin: '0 auto',
+            maxWidth: currentPage === 'selection' ? '1200px' : '100%', 
+            margin: currentPage === 'selection' ? '0 auto' : '0',
             animation: 'fadeIn 0.3s ease-out'
           }}>
-            {/* 根据当前步骤渲染对应组件 - 3步流程 */}
-            {currentStep === 1 && <StepCategory />}
-            {currentStep === 2 && <StepStrategy />}
-            {currentStep === 3 && <StepRecommendation />}
+            {renderPageContent()}
           </div>
         </main>
       </div>

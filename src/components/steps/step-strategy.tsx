@@ -232,6 +232,63 @@ export default function StepStrategy() {
   const [newKeyword, setNewKeyword] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
+  // 初始化检查：如果有选中策略但没有关键词，则自动生成
+  useEffect(() => {
+    // 如果有选中的策略但没有关键词，自动生成关键词
+    if (selectedStrategyId && keywordList.length === 0 && selectedCategories.length > 0) {
+      generateKeywordsForStrategy(selectedStrategyId)
+    }
+    
+    // 如果store中有选中的策略，同步到本地状态
+    if (selectedStrategies.length > 0) {
+      const updatedStrategies = strategies.map(strategy => ({
+        ...strategy,
+        isSelected: selectedStrategies.some(s => s.id === strategy.id)
+      }))
+      setStrategies(updatedStrategies)
+      
+      if (!selectedStrategyId) {
+        setSelectedStrategyId(selectedStrategies[0].id)
+      }
+    }
+  }, [selectedStrategyId, keywordList.length, selectedCategories, selectedStrategies])
+
+  // 组件挂载时的初始化检查
+  useEffect(() => {
+    // 如果有默认选中的策略但还没有设置selectedStrategyId，则设置它
+    const defaultStrategy = strategies.find(s => s.isSelected)
+    if (defaultStrategy && !selectedStrategyId && selectedCategories.length > 0) {
+      setSelectedStrategyId(defaultStrategy.id)
+      // 同步到store
+      updateStrategies([defaultStrategy])
+      // 生成关键词
+      generateKeywordsForStrategy(defaultStrategy.id)
+    }
+  }, [strategies, selectedStrategyId, selectedCategories])
+
+  // 同步keywords到本地状态
+  useEffect(() => {
+    if (keywords.length > 0 && keywordList.length === 0) {
+      setKeywordList(keywords)
+      
+      // 初始化属性数据
+      const attributesMap = {}
+      keywords.filter(kw => kw.isSelected).forEach(kw => {
+        if (kw.attributes) {
+          attributesMap[kw.keyword] = {
+            audience: kw.attributes.audience || ['家庭用户'],
+            season: kw.attributes.season || ['四季通用'],
+            size: kw.attributes.size || ['标准规格'],
+            material: kw.attributes.material || ['环保塑料'],
+            style: kw.attributes.style || ['简约现代'],
+            tags: kw.tags || ['实用', '优质']
+          }
+        }
+      })
+      setKeywordAttributes(attributesMap)
+    }
+  }, [keywords, keywordList.length])
+
   // 处理策略选择
   const handleStrategySelect = (strategyId: string) => {
     const updatedStrategies = strategies.map(strategy => ({
