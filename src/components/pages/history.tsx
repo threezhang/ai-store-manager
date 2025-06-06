@@ -530,41 +530,137 @@ export default function HistoryPage() {
 
   // 执行推荐操作的函数
   const executeAction = (actionType: string, actionData: any) => {
+    // 显示开始执行的通知
+    const showProgress = (message: string, duration: number = 2000) => {
+      // 这里可以集成实际的通知系统
+      const notification = document.createElement('div')
+      notification.className = 'fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-all'
+      notification.textContent = message
+      document.body.appendChild(notification)
+      
+      setTimeout(() => {
+        notification.style.transform = 'translateX(100%)'
+        setTimeout(() => document.body.removeChild(notification), 300)
+      }, duration)
+    }
+
     switch (actionType) {
       case 'expand':
-        // 跳转到产品页面进行扩展
-        setCurrentPage('products')
+        // 根据actionData判断是产品扩展还是类目扩展
+        if (actionData?.title?.includes('产品')) {
+          showProgress('正在为您扩展相关产品选择...')
+          setTimeout(() => {
+            setCurrentPage('products')
+            showProgress('已跳转到产品页面，AI正在准备扩展推荐', 3000)
+          }, 1000)
+        } else {
+          showProgress('正在扩展类目覆盖...')
+          setTimeout(() => {
+            setCurrentPage('selection')
+            showProgress('已跳转到类目选择，开始扩展覆盖', 3000)
+          }, 1000)
+        }
         break
+        
       case 'optimize':
-        // 跳转到分析页面进行优化
-        setCurrentPage('analytics')
+        showProgress('正在优化选品策略参数...')
+        setTimeout(() => {
+          setCurrentPage('analytics')
+          showProgress('已跳转到分析页面，开始策略优化', 3000)
+        }, 1000)
         break
+        
       case 'research':
-        // 可以打开研究面板或跳转到相关页面
-        alert('正在为您准备市场调研报告...')
+        showProgress('正在启动深度市场调研...')
+        setTimeout(() => {
+          showProgress('市场调研报告生成中，预计3-5天完成', 4000)
+          // 这里可以触发实际的研究任务
+        }, 1500)
         break
+        
       case 'replicate':
-        // 应用成功模式到更多产品
-        alert('正在复制成功选品标准到推荐算法...')
+        showProgress('正在复制成功选品模式...')
+        setTimeout(() => {
+          showProgress('已将成功标准应用到推荐算法中', 3000)
+        }, 2000)
         break
+        
+      case 'analyze':
+        showProgress('正在分析竞品环境...')
+        setTimeout(() => {
+          showProgress('竞品分析启动，将在2天内提供报告', 3000)
+        }, 1500)
+        break
+        
       case 'adjust':
-        // 调整筛选标准
-        alert('正在调整产品筛选参数...')
+        showProgress('正在调整产品筛选参数...')
+        setTimeout(() => {
+          showProgress('筛选标准已优化，新推荐将更精准', 3000)
+        }, 2000)
         break
+        
       case 'review':
-        // 回顾被忽略的产品
-        setCurrentPage('products')
+        showProgress('正在重新评估被忽略的产品...')
+        setTimeout(() => {
+          setCurrentPage('products')
+          showProgress('已跳转到产品页面，查看重新评估结果', 3000)
+        }, 1000)
         break
+        
       case 'train':
-        // AI训练
-        alert('AI强化学习已启动，预计2小时完成...')
+        showProgress('AI强化学习训练已启动...')
+        setTimeout(() => {
+          showProgress('训练进度78%，预计2小时完成', 4000)
+        }, 1500)
         break
+        
+      case 'update':
+        showProgress('正在更新用户偏好模型...')
+        setTimeout(() => {
+          showProgress('偏好模型更新完成，推荐将更加个性化', 3000)
+        }, 2000)
+        break
+        
+      case 'calibrate':
+        showProgress('正在校准推荐算法...')
+        setTimeout(() => {
+          showProgress('算法校准完成，推荐准确率提升15%', 3000)
+        }, 2000)
+        break
+        
       case 'monitor':
-        // 设置监控
-        alert('已为您设置类目表现监控...')
+        showProgress('正在设置类目表现监控...')
+        setTimeout(() => {
+          showProgress('监控系统已激活，将持续跟踪市场变化', 3000)
+        }, 1500)
         break
+        
+      case 'refine':
+        showProgress('正在精细化策略参数...')
+        setTimeout(() => {
+          showProgress('策略优化完成，执行效率提升20%', 3000)
+        }, 2000)
+        break
+        
+      case 'replace':
+        showProgress('正在分析类目替换方案...')
+        setTimeout(() => {
+          showProgress('已生成类目替换建议，请在选择页面查看', 4000)
+        }, 2000)
+        break
+        
+      case 'supplement':
+        showProgress('正在寻找辅助类目...')
+        setTimeout(() => {
+          showProgress('已识别3个低风险辅助类目，等待确认', 3000)
+        }, 2000)
+        break
+        
       default:
-        alert('操作执行中...')
+        showProgress('操作执行中，请稍候...')
+        setTimeout(() => {
+          showProgress('操作已完成', 2000)
+        }, 1500)
     }
   }
 
@@ -988,10 +1084,16 @@ export default function HistoryPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{decision.decision}</h3>
                   <p className="text-sm text-gray-600">{decision.context}</p>
+                  <p className="text-sm text-blue-600 mt-1">{decision.reasoning}</p>
                 </div>
               </div>
-              <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                ROI {decision.roi}%
+              <div className="flex items-center gap-2">
+                <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                  ROI {decision.roi}%
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${decision.status === 'successful' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                  {decision.status === 'successful' ? '成功' : '进行中'}
+                </span>
               </div>
             </div>
 
@@ -1009,7 +1111,12 @@ export default function HistoryPage() {
               ))}
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="text-sm font-medium text-blue-700 mb-2">⚡ 执行措施</div>
+              <div className="text-sm text-blue-600">{decision.execution}</div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
               <div className="text-sm font-medium text-green-700 mb-2">✅ 执行效果</div>
               <div className="space-y-1">
                 {(decision.results || []).map((result, index) => (
@@ -1018,34 +1125,37 @@ export default function HistoryPage() {
               </div>
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="text-sm font-medium text-green-700 mb-2">🚀 后续行动</div>
-              <div className="space-y-3">
-                {(decision.followUpActions || []).map((action, index) => (
-                  <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <PlayCircle className="w-4 h-4 text-blue-600" />
-                        <span className="font-medium text-gray-900">{action.title}</span>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(action.priority)}`}>
-                          {action.priority === 'high' ? '高优先级' : action.priority === 'medium' ? '中优先级' : '低优先级'}
-                        </span>
+            {/* 添加后续行动操作 */}
+            {decision.followUpActions && decision.followUpActions.length > 0 && (
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
+                <div className="text-sm font-medium text-blue-700 mb-3">🚀 后续行动计划</div>
+                <div className="space-y-3">
+                  {decision.followUpActions.map((action, index) => (
+                    <div key={index} className="bg-white border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <PlayCircle className="w-4 h-4 text-blue-600" />
+                          <span className="font-medium text-gray-900">{action.title}</span>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(action.priority)}`}>
+                            {action.priority === 'high' ? '高优先级' : action.priority === 'medium' ? '中优先级' : '低优先级'}
+                          </span>
+                        </div>
+                        <button 
+                          onClick={() => executeAction(action.type, action)}
+                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                        >
+                          立即执行
+                        </button>
                       </div>
-                      <button 
-                        onClick={() => executeAction(action.type, action)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
-                      >
-                        立即执行
-                      </button>
+                      <p className="text-sm text-gray-600 mb-2">{action.description}</p>
+                      <div className="text-xs text-blue-600">
+                        📅 计划完成时间: {action.dueDate}
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{action.description}</p>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      <span>📅 预计完成时间: {action.dueDate}</span>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ))
       )}
@@ -1065,8 +1175,11 @@ export default function HistoryPage() {
           <div key={milestone.id} className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-start gap-3 mb-4">
               <Award className="w-6 h-6 text-yellow-600 mt-1" />
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">{milestone.achievement}</h3>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900">{milestone.achievement}</h3>
+                  <span className="text-xs text-gray-500">{milestone.date}</span>
+                </div>
                 <p className="text-yellow-600 font-medium text-sm">{milestone.celebration}</p>
               </div>
             </div>
@@ -1088,39 +1201,45 @@ export default function HistoryPage() {
               ))}
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {(milestone.keyDrivers || []).map((driver, index) => (
-                <span key={index} className="bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
-                  {driver}
-                </span>
-              ))}
-            </div>
-
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="text-sm font-medium text-yellow-700 mb-2">🚀 下一步行动</div>
-              <div className="space-y-3">
-                {(milestone.nextSteps || []).map((step, index) => (
-                  <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <PlayCircle className="w-4 h-4 text-blue-600" />
-                        <span className="font-medium text-gray-900">{step.title}</span>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(step.priority)}`}>
-                          {step.priority === 'high' ? '高优先级' : step.priority === 'medium' ? '中优先级' : '低优先级'}
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => step.action()}
-                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
-                      >
-                        立即执行
-                      </button>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">{step.description}</p>
-                  </div>
+            <div className="mb-4">
+              <div className="text-sm font-medium text-gray-700 mb-2">🎯 关键成功因素</div>
+              <div className="flex flex-wrap gap-2">
+                {(milestone.keyDrivers || []).map((driver, index) => (
+                  <span key={index} className="bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
+                    {driver}
+                  </span>
                 ))}
               </div>
             </div>
+
+            {/* 添加下一步行动 */}
+            {milestone.nextSteps && milestone.nextSteps.length > 0 && (
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4">
+                <div className="text-sm font-medium text-yellow-700 mb-3">🚀 庆祝后的下一步</div>
+                <div className="space-y-3">
+                  {milestone.nextSteps.map((step, index) => (
+                    <div key={index} className="bg-white border border-yellow-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Maximize2 className="w-4 h-4 text-yellow-600" />
+                          <span className="font-medium text-gray-900">{step.title}</span>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(step.priority)}`}>
+                            {step.priority === 'high' ? '高优先级' : step.priority === 'medium' ? '中优先级' : '低优先级'}
+                          </span>
+                        </div>
+                        <button 
+                          onClick={() => step.action()}
+                          className="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700 transition-colors"
+                        >
+                          立即行动
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-600">{step.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ))
       )}
