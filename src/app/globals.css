@@ -979,7 +979,7 @@ body {
   .business-grid.cols-4,
   .business-grid.cols-3,
   .business-grid.cols-2 { 
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
   
   .business-card {

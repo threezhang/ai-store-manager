@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
-import {
+import { 
   Home, TrendingUp, Package, BarChart3, Settings, 
   History, HelpCircle, ChevronLeft, ChevronRight,
   Bell, User, Database, Download, Upload, Target,
@@ -101,7 +101,7 @@ export default function Sidebar() {
   }
 
   if (isCollapsed) {
-    return (
+  return (
       <div className="w-16 bg-white border-r border-gray-200 flex flex-col">
         {/* 折叠状态的Logo */}
         <div className="h-16 flex items-center justify-center border-b border-gray-200">
@@ -127,16 +127,16 @@ export default function Sidebar() {
               {currentStep}
             </span>
           </button>
-        </div>
+      </div>
 
         {/* 折叠状态的导航 */}
         <nav className="flex-1 py-4">
           <div className="space-y-2 px-2">
             {navigationItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <button
-                  key={item.id}
+            const Icon = item.icon
+            return (
+              <button
+                key={item.id}
                   onClick={() => handleNavClick(item.id)}
                   className={cn(
                     'w-12 h-12 rounded-lg flex items-center justify-center transition-colors relative group',
@@ -151,12 +151,12 @@ export default function Sidebar() {
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {item.badge}
                     </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        </nav>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </nav>
 
         {/* 展开按钮 */}
         <div className="p-2 border-t border-gray-200">
@@ -257,10 +257,10 @@ export default function Sidebar() {
           <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">主要功能</h4>
           <div className="space-y-1">
             {navigationItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <button
-                  key={item.id}
+            const Icon = item.icon
+            return (
+              <button
+                key={item.id}
                   onClick={() => handleNavClick(item.id)}
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all duration-200 group nav-item',
@@ -289,11 +289,11 @@ export default function Sidebar() {
                       {item.badge}
                     </span>
                   )}
-                </button>
-              )
-            })}
-          </div>
+              </button>
+            )
+          })}
         </div>
+      </div>
 
         {/* 快速统计 */}
         <div className="px-4 mb-4">

@@ -5,18 +5,18 @@ import { useStore } from '@/lib/store'
 import { mockStrategies, getRecommendedKeywordsByCategory, generateKeywords } from '@/lib/mock-data'
 import { cn } from '@/lib/utils'
 import { 
-  TrendingUp, Search, Crown, ArrowRight, 
-  Lightbulb, Target, Shield, CheckCircle2, Clock,
+  ChevronRight, Target, Lightbulb, Star, 
   BarChart3, Users, Settings, Zap, X, Plus,
   Package, Palette, Edit3, ChevronDown, Tag,
-  Loader2, Check, AlertCircle, Hash
+  Loader2, Check, AlertCircle, Hash, Filter, TrendingUp, Clock, ArrowRight
 } from 'lucide-react'
 import type { StrategyConfig, KeywordData } from '@/lib/types'
+import StrategyConfigurator from '@/components/strategy-configurator'
 
 const strategyIcons = {
   trend: TrendingUp,
-  blueOcean: Search,
-  premium: Crown
+  blueOcean: ChevronRight,
+  premium: Star
 }
 
 const strategyColors = {
@@ -456,103 +456,188 @@ export default function StepStrategy() {
     <div className="page-layout page-enter">
       {/* 页面标题 */}
       <div className="page-header">
-        <h1 className="page-title">策略选择 & 关键词配置</h1>
-        <p className="page-description">
-          选择适合的经营策略，并配置精准关键词，AI将根据您的配置推荐优质商品
-        </p>
+        <h1 className="page-title">选择经营策略</h1>
+        <p className="page-description">基于您选择的类目，AI为您推荐合适的经营策略和关键词</p>
       </div>
 
       <div className="page-content">
-        {/* AI推荐说明 */}
-        <div className="ai-recommendation-simple content-section">
-          <Lightbulb className="ai-icon" />
-          <div className="ai-recommendation-content">
-            <span className="ai-badge">AI 策略工场</span>
-            选择策略后将自动生成匹配的关键词，您可以进一步配置关键词属性以获得更精准的推荐结果
+        {/* AI推荐说明 - 为无货源分销添加特别提示 */}
+        <div className="content-section">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5 mb-6">
+            <div className="flex items-start gap-4">
+              <div className="bg-blue-100 rounded-full p-3">
+                <Lightbulb className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded font-medium">分销策略</span>
+                  <span className="text-blue-700 font-medium">为无货源分销卖家推荐最佳经营策略</span>
+                </div>
+                <p className="text-sm text-blue-800 mb-2">
+                  针对无货源分销模式，选择正确的策略能够帮助您:<br/>
+                  1. 找到高利润率、低竞争的优质商品<br/>
+                  2. 确保供应商可靠，发货及时，售后风险低<br/>
+                  3. 实现快速周转，无需囤货
+                </p>
+                <div className="bg-white bg-opacity-70 p-2 rounded border border-blue-100 text-sm text-blue-700">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="font-medium">推荐策略: 蓝海挖掘</span>
+                  </div>
+                  <p>特别适合无货源分销的商家，能够帮助您找到竞争度低、利润空间大、供应稳定的优质货源</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 策略选择区域 */}
+        {/* 策略选择卡片 - 简化版 */}
         <div className="content-section">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">第一步：选择经营策略</h2>
-          <div className="strategy-cards-consistent-grid">
-            {strategies.map((strategy, index) => {
-              const Icon = strategyIcons[strategy.id]
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {strategies.map((strategy) => {
+              const StrategyIcon = strategyIcons[strategy.id]
               const colors = strategyColors[strategy.id]
-              const isSelected = selectedStrategyId === strategy.id
+              const isSelected = strategy.id === selectedStrategyId
               
               return (
                 <div
                   key={strategy.id}
                   className={cn(
-                    'strategy-card-consistent card-enter',
-                    isSelected && 'selected'
+                    "strategy-card border rounded-xl overflow-hidden transition-all duration-300 cursor-pointer h-fit",
+                    isSelected 
+                      ? `border-2 shadow-lg` 
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm",
+                    strategy.id === 'blueOcean' && "relative"
                   )}
-                  style={{ animationDelay: `${index * 100}ms` }}
                   onClick={() => handleStrategySelect(strategy.id)}
+                  style={{ 
+                    backgroundColor: isSelected ? colors.light : 'white',
+                    borderColor: isSelected ? colors.primary : undefined
+                  }}
                 >
-                  {/* 策略卡片内容保持不变 */}
-                  <div className="strategy-card-consistent-header">
-                    <div className="strategy-title-row-consistent">
-                      <div 
-                        className="strategy-icon-consistent"
-                        style={{ 
-                          backgroundColor: colors.light,
-                          color: colors.primary 
-                        }}
-                      >
-                        <Icon className="w-6 h-6" />
+                  {/* 分销商推荐标签 */}
+                  {strategy.id === 'blueOcean' && (
+                    <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs px-2 py-1 rounded-full shadow-sm z-10">
+                      分销商首选
+                    </div>
+                  )}
+
+                  <div className="p-5">
+                    {/* 策略头部 */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="rounded-full p-2" style={{ backgroundColor: colors.light }}>
+                        <StrategyIcon className="w-5 h-5" style={{ color: colors.primary }} />
                       </div>
-                      <div className="strategy-info-consistent">
-                        <h3 className="strategy-name-consistent">{strategy.name}</h3>
-                        <p className="strategy-tagline-consistent" style={{ color: colors.primary }}>
-                          {strategy.tagline}
-                        </p>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{strategy.name}</h3>
+                        <p className="text-sm text-gray-600">{strategy.tagline}</p>
                       </div>
-                      {isSelected && (
-                        <div className="selected-indicator-consistent">
-                          <CheckCircle2 className="w-6 h-6" style={{ color: colors.primary }} />
+                    </div>
+                    
+                    {/* 核心数据 - 突出无货源分销关键指标 */}
+                    <div className="bg-gray-50 p-3 rounded-lg mb-4">
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="text-gray-500">预期利润率:</span>
+                          <span className="ml-1 font-semibold text-green-600">
+                            {strategy.filterRules.profitMargin.value}%+
+                          </span>
                         </div>
-                      )}
+                        <div>
+                          <span className="text-gray-500">竞争店铺:</span>
+                          <span className="ml-1 font-semibold text-blue-600">
+                            ≤{strategy.filterRules.competitionLevel.value}家
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">增长要求:</span>
+                          <span className="ml-1 font-semibold text-orange-600">
+                            {strategy.filterRules.salesGrowth.value}%+
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">数据更新:</span>
+                          <span className="ml-1 font-semibold text-gray-600">
+                            {strategy.dataSupport.analysisFrequency}
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
-                    <p className="strategy-description-consistent">{strategy.description}</p>
-
-                    <div className="strategy-characteristics-consistent">
-                      <div className="characteristic-item-consistent">
-                        <Clock className="w-4 h-4" />
-                        <span>{strategy.characteristics.timeframe}</span>
-                      </div>
-                      <div className="characteristic-item-consistent">
-                        <BarChart3 className="w-4 h-4" />
-                        <span>{strategy.characteristics.profitLevel}</span>
-                      </div>
-                      <div className="characteristic-item-consistent">
-                        <Shield className="w-4 h-4" />
-                        <span>{strategy.characteristics.difficulty}</span>
-                      </div>
-                    </div>
-
-                    <div className="core-advantages-consistent">
-                      {strategy.coreAdvantages.map((advantage, idx) => (
-                        <span 
-                          key={idx}
-                          className="advantage-tag-consistent"
-                          style={{ 
-                            backgroundColor: colors.light,
-                            color: colors.primary,
-                            border: `1px solid ${colors.border}`
-                          }}
-                        >
-                          {advantage}
-                        </span>
+                    {/* 无货源分销优势 */}
+                    <div className="space-y-2 mb-4">
+                      {strategy.coreAdvantages.slice(0, 3).map((advantage, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          <span className="text-gray-700">{advantage}</span>
+                        </div>
                       ))}
                     </div>
+
+                    {/* 蓝海策略特殊优势 */}
+                    {strategy.id === 'blueOcean' && strategy.distributionAdvantages && (
+                      <div className="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-100">
+                        <div className="text-xs text-blue-600 mb-2 font-medium">无货源分销专属优势</div>
+                        <div className="space-y-1">
+                          {strategy.distributionAdvantages.slice(0, 2).map((advantage, index) => (
+                            <div key={index} className="flex items-center gap-2 text-xs text-blue-700">
+                              <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />
+                              <span>{advantage}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* 适用场景 */}
+                    <div className="text-xs text-gray-500 mb-4">
+                      适合: {strategy.targetUsers.slice(0, 2).join('、')}
+                    </div>
+                  </div>
+                  
+                  {/* 选择按钮 */}
+                  <div 
+                    className={cn(
+                      "p-3 text-center border-t text-sm font-medium transition-all",
+                      isSelected 
+                        ? `text-white border-opacity-20` 
+                        : "bg-gray-50 text-gray-700 border-gray-100 hover:bg-gray-100"
+                    )}
+                    style={{
+                      backgroundColor: isSelected ? colors.primary : undefined,
+                      borderColor: isSelected ? colors.primary : undefined
+                    }}
+                  >
+                    {isSelected ? '✓ 当前选中' : '选择此策略'}
                   </div>
                 </div>
               )
             })}
           </div>
+        </div>
+
+        {/* 策略个性化配置器 - 仅在选择策略后显示 */}
+        {selectedStrategy && (
+          <div className="content-section">
+            <StrategyConfigurator 
+              strategy={selectedStrategy}
+              onConfigChange={(updatedStrategy) => {
+                const updatedStrategies = strategies.map(s => 
+                  s.id === updatedStrategy.id ? updatedStrategy : s
+                )
+                setStrategies(updatedStrategies)
+                updateStrategies([updatedStrategy])
+                
+                // 重新生成关键词以反映策略调整
+                generateKeywordsForStrategy(updatedStrategy.id)
+              }}
+            />
+          </div>
+        )}
+
+        {/* 分隔线 */}
+        <div className="content-section">
+          <div className="border-t border-gray-200 my-6"></div>
         </div>
 
         {/* 关键词配置区域 */}
@@ -600,7 +685,10 @@ export default function StepStrategy() {
                               </div>
                               
                               <button
-                                onClick={() => handleKeywordRemove(kw.keyword)}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleKeywordRemove(kw.keyword)
+                                }}
                                 className="text-gray-400 hover:text-red-500 transition-colors p-1"
                               >
                                 <X className="w-4 h-4" />

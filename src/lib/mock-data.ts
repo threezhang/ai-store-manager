@@ -226,16 +226,87 @@ export const mockCategories: CategoryData[] = [
   }
 ]
 
-// Mock策略数据 - 重新设计版本
+// Mock策略数据 - 添加具体筛选规则版本
 export const mockStrategies: StrategyConfig[] = [
   {
     id: 'trend',
-    name: '热点爆款',
+    name: '爆款追踪',
     tagline: '追热点，快爆发',
-    description: '基于AI实时监测社媒热点和搜索趋势，快速捕捉爆款商机',
+    description: 'AI实时监测200万订单数据，快速捕捉销量异常增长的爆款商机',
     isSelected: false,
-    // 核心优势（3个关键词）
-    coreAdvantages: ['起量极快', '流量成本低', '爆发力强'],
+    // 量化数据支撑
+    dataSupport: {
+      sampleSize: '生意参谋全网数据',
+      analysisFrequency: '每2小时更新',
+      dataSource: '生意参谋+热卖榜单+1688',
+      updateTime: '2024-06-07 13:30'
+    },
+    // 具体筛选规则
+    filterRules: {
+      salesGrowth: {
+        operator: '>=',
+        value: 200,
+        unit: '%',
+        period: '近7天',
+        min: 50,
+        max: 500,
+        isUserAdjustable: true
+      },
+      competitionLevel: {
+        operator: '<=',
+        value: 50,
+        unit: '家店铺',
+        description: '生意参谋竞争店铺数',
+        min: 10,
+        max: 200,
+        isUserAdjustable: true
+      },
+      profitMargin: {
+        operator: '>=',
+        value: 30,
+        unit: '%',
+        calculation: '(市场价-1688批发价)/市场价',
+        min: 15,
+        max: 80,
+        isUserAdjustable: true
+      },
+      additionalRules: [
+        {
+          name: '搜索指数飙升',
+          operator: '>=',
+          value: 300,
+          unit: '%',
+          description: '生意参谋7天搜索指数增长'
+        },
+        {
+          name: '热卖榜排名提升',
+          operator: '>=',
+          value: 50,
+          unit: '名次',
+          description: '第三方榜单排名上升'
+        },
+        {
+          name: '1688供应商增速',
+          operator: '>=',
+          value: 20,
+          unit: '%',
+          description: '新增供应商数量增长'
+        }
+      ]
+    },
+    // 核心优势（3个关键词）- 针对无货源分销商
+    coreAdvantages: [
+      '热度飙升快速起量', 
+      '供应商跟进及时', 
+      '流量获取成本低'
+    ],
+    // 量化指标范围 - 只展示数据分布
+    dataRanges: {
+      avgCompetitionScore: '30-60分',
+      avgProfitMargin: '30-55%',
+      avgMonthlySales: '300-800件',
+      priceRange: '20-150元'
+    },
     // 适用人群
     targetUsers: ['新手卖家', '追求快速起量', '灵活供应链'],
     // 策略特点
@@ -247,75 +318,240 @@ export const mockStrategies: StrategyConfig[] = [
     },
     // 示例关键词（用于展示，实际会根据类目动态生成）
     recommendedKeywords: [
-      { keyword: '网红爆款神器', heat: 95, competition: 68, type: '热搜词', reason: '社媒热度爆发' },
-      { keyword: '抖音同款好物', heat: 92, competition: 75, type: '飙升词', reason: '短视频种草效应' },
-      { keyword: '小红书推荐', heat: 89, competition: 65, type: '热搜词', reason: '种草平台热门' },
-      { keyword: '居家生活必备', heat: 91, competition: 72, type: '季节词', reason: '居家生活热潮' },
-      { keyword: '懒人必备神器', heat: 87, competition: 52, type: '话题词', reason: '懒人经济兴起' },
-      { keyword: '智能生活好物', heat: 89, competition: 65, type: '科技词', reason: '智能产品热潮' }
+      { keyword: '网红爆款神器', heat: 95, competition: 68, type: '热搜词', reason: '7天销量增长285%，符合爆款追踪规则' },
+      { keyword: '抖音同款好物', heat: 92, competition: 75, type: '飙升词', reason: '话题热度飙升320%，KOL推荐7次' },
+      { keyword: '小红书推荐', heat: 89, competition: 65, type: '热搜词', reason: '新品流量权重1.8倍，竞争店铺49家' },
+      { keyword: '爆款潜力好物', heat: 87, competition: 52, type: '潜力词', reason: '销量增长220%，符合>=200%规则' },
+      { keyword: '网红同款', heat: 85, competition: 70, type: '热搜词', reason: '利润率35%，KOL推荐6次，满足筛选条件' }
     ],
-    params: {
-      growthThreshold: 80,
-      competitionThreshold: 80,
-      profitThreshold: 20
-    }
+    // 用户个性化设置
+    userSettings: {
+      riskTolerance: 'high',      // 高风险高收益策略
+      experience: 'intermediate',  // 需要一定经验
+      capital: 'medium',          // 中等资金要求
+      timeCommitment: 'full',     // 需要全职投入
+      preferredMargin: 30,        // 期望30%利润率
+      maxCompetition: 50          // 可接受50家竞争店铺
+    },
   },
   {
     id: 'blueOcean',
     name: '蓝海挖掘',
-    tagline: '找空白，稳增长',
-    description: 'AI算法深度挖掘低竞争细分市场，建立差异化竞争优势',
-    isSelected: true,
-    coreAdvantages: ['竞争小', '利润稳定', '可持续'],
-    targetUsers: ['有耐心卖家', '品牌化发展', '长期规划'],
+    tagline: '低竞争，高利润',
+    description: '基于订单数据挖掘低竞争细分市场，为无货源分销商量身定制',
+    isSelected: false,
+    // 量化数据支撑
+    dataSupport: {
+      sampleSize: '1688商机+生意参谋细分数据',
+      analysisFrequency: '每日深度分析',
+      dataSource: '1688商机中心+生意参谋+细分榜单',
+      updateTime: '2024-06-07 09:00'
+    },
+    // 具体筛选规则
+    filterRules: {
+      salesGrowth: {
+        operator: '>=',
+        value: 50,
+        unit: '%',
+        period: '近30天',
+        min: 20,
+        max: 200,
+        isUserAdjustable: true
+      },
+      competitionLevel: {
+        operator: '<=',
+        value: 15,
+        unit: '家店铺',
+        description: '生意参谋同款店铺数',
+        min: 5,
+        max: 50,
+        isUserAdjustable: true
+      },
+      profitMargin: {
+        operator: '>=',
+        value: 40,
+        unit: '%',
+        calculation: '(市场价-1688批发价)/市场价',
+        min: 25,
+        max: 70,
+        isUserAdjustable: true
+      },
+      additionalRules: [
+        {
+          name: '搜索需求/供应比',
+          operator: '>=',
+          value: 100,
+          unit: '比值',
+          description: '搜索指数/1688供应商数量'
+        },
+        {
+          name: '细分关键词竞争度',
+          operator: '<=',
+          value: 30,
+          unit: '分',
+          description: '生意参谋长尾词竞争评分'
+        },
+        {
+          name: '1688优质供应商率',
+          operator: '>=',
+          value: 60,
+          unit: '%',
+          description: '4星以上供应商占比'
+        }
+      ]
+    },
+    // 核心优势（突出分销优势）- 针对无货源分销商
+    coreAdvantages: [
+      '竞争少利润高', 
+      '供应链稳定可靠', 
+      '长期盈利空间大'
+    ],
+    // 量化指标范围
+    dataRanges: {
+      avgCompetitionScore: '10-35分',
+      avgProfitMargin: '40-65%',
+      avgMonthlySales: '100-300件',
+      priceRange: '30-200元'
+    },
+    // 无货源分销特别优势
+    distributionAdvantages: [
+      '无囤货风险 - 一件代发模式',
+      '市场空白 - 70%+需求未被满足',
+      '利润保护 - 90天+低竞争期',
+      '精准定位 - 细分需求验证'
+    ],
+    // 适用人群
+    targetUsers: ['无货源分销商', '稳健投资者', '细分市场专家'],
+    // 策略特点
     characteristics: {
-      difficulty: '需要技巧',
-      timeframe: '2-4周见效',
-      riskLevel: '低风险',
+      difficulty: '需要耐心',
+      timeframe: '7-15天见效',
+      riskLevel: '中低风险', 
       profitLevel: '高利润'
     },
-    // 示例关键词（用于展示，实际会根据类目动态生成）
+    // 示例关键词
     recommendedKeywords: [
-      { keyword: '垂直细分专用', heat: 85, competition: 45, type: '长尾词', reason: '细分需求未满足' },
-      { keyword: '小众市场专用', heat: 76, competition: 45, type: '功能词', reason: '专业化需求' },
-      { keyword: '特殊场景应用', heat: 75, competition: 42, type: '场景词', reason: '场景化细分' },
-      { keyword: '专业工具配件', heat: 78, competition: 55, type: '精准词', reason: '垂直市场机会' },
-      { keyword: '周边辅助产品', heat: 82, competition: 48, type: '长尾词', reason: '配件市场空白' },
-      { keyword: '专业级工具', heat: 76, competition: 42, type: '专业词', reason: '专业用户需求' }
+      { keyword: '高利润小众产品', heat: 45, competition: 15, type: '蓝海词', reason: '市场空白度75%，竞争密度0.2家/万搜索' },
+      { keyword: '稳定供应链产品', heat: 38, competition: 12, type: '稳定词', reason: '利润保护期120天，竞争店铺仅12家' },
+      { keyword: '低竞争细分市场', heat: 42, competition: 18, type: '蓝海词', reason: '市场空白度72%，利润率48%' },
+      { keyword: '分销专供好货', heat: 35, competition: 8, type: '专供词', reason: '竞争密度0.15家/万搜索，利润率52%' },
+      { keyword: '无货源首选', heat: 48, competition: 22, type: '分销词', reason: '30天增长65%，利润保护期95天' }
     ],
-    params: {
-      growthThreshold: 30,
-      competitionThreshold: 50,
-      profitThreshold: 35
-    }
+    // 用户个性化设置
+    userSettings: {
+      riskTolerance: 'medium',      // 中等风险中等收益策略
+      experience: 'intermediate',  // 需要一定经验
+      capital: 'medium',          // 中等资金要求
+      timeCommitment: 'full',     // 需要全职投入
+      preferredMargin: 30,        // 期望30%利润率
+      maxCompetition: 50          // 可接受50家竞争店铺
+    },
   },
   {
     id: 'premium',
-    name: '高利润策略', 
-    tagline: '做精品，赚差价',
-    description: '聚焦高价值商品和精准人群，通过品质差异化实现高利润',
+    name: '长尾稳定',
+    tagline: '稳定增长，适合新手',
+    description: '专注四季热销的长尾商品，订单虽不爆发但持续稳定，适合稳健经营',
     isSelected: false,
-    coreAdvantages: ['单品利润高', '复购率高', '抗价格战'],
-    targetUsers: ['成熟卖家', '品质导向', '利润优先'],
-    characteristics: {
-      difficulty: '专业要求',
-      timeframe: '1-3周见效',
-      riskLevel: '中等风险', 
-      profitLevel: '超高利润'
+    // 量化数据支撑
+    dataSupport: {
+      sampleSize: '生意参谋6个月历史数据',
+      analysisFrequency: '每周趋势分析',
+      dataSource: '生意参谋+1688+稳定榜单',
+      updateTime: '2024-06-07 06:00'
     },
-    recommendedKeywords: [
-      { keyword: '高端品质产品', heat: 72, competition: 38, type: '品牌词', reason: '高端市场定位' },
-      { keyword: '奢华设计款', heat: 85, competition: 58, type: '价值词', reason: '奢华消费升级' },
-      { keyword: '专业级产品', heat: 82, competition: 58, type: '专业词', reason: '专业用户付费意愿高' },
-      { keyword: '定制化服务', heat: 72, competition: 45, type: '高端词', reason: '个性化定制需求' },
-      { keyword: '进口优质材质', heat: 85, competition: 75, type: '品牌词', reason: '进口产品溢价' },
-      { keyword: '限量精品', heat: 82, competition: 68, type: '奢华词', reason: '收藏价值溢价' }
+    // 具体筛选规则
+    filterRules: {
+      salesGrowth: {
+        operator: '>=',
+        value: 20,
+        unit: '%',
+        period: '近90天',
+        min: 10,
+        max: 100,
+        isUserAdjustable: true
+      },
+      competitionLevel: {
+        operator: '<=',
+        value: 80,
+        unit: '家店铺',
+        description: '生意参谋同款店铺数',
+        min: 30,
+        max: 150,
+        isUserAdjustable: true
+      },
+      profitMargin: {
+        operator: '>=',
+        value: 25,
+        unit: '%',
+        calculation: '(市场价-1688批发价)/市场价',
+        min: 15,
+        max: 60,
+        isUserAdjustable: true
+      },
+      additionalRules: [
+        {
+          name: '搜索稳定系数',
+          operator: '>=',
+          value: 0.8,
+          unit: '稳定值',
+          description: '生意参谋6月搜索波动(0-1)'
+        },
+        {
+          name: '榜单持续上榜率',
+          operator: '>=',
+          value: 80,
+          unit: '%',
+          description: '近6月热卖榜出现频率'
+        },
+        {
+          name: '1688供应链成熟度',
+          operator: '>=',
+          value: 85,
+          unit: '分',
+          description: '供应商稳定性综合评分'
+        }
+      ]
+    },
+    // 核心优势 - 针对无货源分销商
+    coreAdvantages: [
+      '需求稳定风险低', 
+      '操作简单易上手', 
+      '持续稳定有收益'
     ],
-    params: {
-      growthThreshold: 25,
-      competitionThreshold: 70,
-      profitThreshold: 45
-    }
+    // 量化指标范围
+    dataRanges: {
+      avgCompetitionScore: '25-60分',
+      avgProfitMargin: '25-40%',
+      avgMonthlySales: '80-200件',
+      priceRange: '15-100元'
+    },
+    // 适用人群
+    targetUsers: ['初创卖家', '风险规避型商家', '稳健投资者'],
+    // 策略特点
+    characteristics: {
+      difficulty: '简单易懂',
+      timeframe: '15-30天见效',
+      riskLevel: '低风险',
+      profitLevel: '中等利润'
+    },
+    // 示例关键词
+    recommendedKeywords: [
+      { keyword: '日常必需品', heat: 55, competition: 35, type: '稳定词', reason: '销量稳定系数0.85，需求持续指数88分' },
+      { keyword: '四季热销产品', heat: 52, competition: 32, type: '长尾词', reason: '需求持续指数90分，复购率42%' },
+      { keyword: '新手易操作', heat: 48, competition: 28, type: '新手词', reason: '稳定系数0.82，利润率30%，操作门槛低' },
+      { keyword: '稳定复购好物', heat: 45, competition: 30, type: '复购词', reason: '复购率45%，销量稳定系数0.88' },
+      { keyword: '长期稳定收益', heat: 42, competition: 25, type: '稳健词', reason: '稳定系数0.9，需求持续指数87分，风险可控' }
+    ],
+    // 用户个性化设置
+    userSettings: {
+      riskTolerance: 'low',       // 低风险低收益策略
+      experience: 'beginner',     // 适合新手
+      capital: 'small',            // 低资金要求
+      timeCommitment: 'part',     // 可兼职投入
+      preferredMargin: 20,        // 期望20%利润率
+      maxCompetition: 30          // 可接受30家竞争店铺
+    },
   }
 ]
 

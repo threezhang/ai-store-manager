@@ -26,7 +26,73 @@ export interface StrategyConfig {
   tagline: string;           // 策略标语
   description: string;
   isSelected: boolean;
-  coreAdvantages: string[];  // 核心优势（3个）
+  
+  // 量化数据支撑
+  dataSupport: {
+    sampleSize: string;      // 样本规模 (如"200万订单数据")
+    analysisFrequency: string; // 分析频率 (如"每2小时更新")
+    dataSource: string;      // 数据来源 (如"淘宝、抖音、拼多多订单")
+    updateTime: string;      // 最新更新时间
+  };
+  
+  // 具体筛选规则 - 让用户看到策略的量化逻辑
+  filterRules: {
+    salesGrowth: {           // 销量增长率规则
+      operator: string;      // 操作符 如">=" 
+      value: number;         // 阈值 如200
+      unit: string;          // 单位 如"%"
+      period: string;        // 时间周期 如"近7天"
+      min?: number;          // 最小值限制
+      max?: number;          // 最大值限制
+      isUserAdjustable?: boolean; // 用户是否可调整
+    };
+    competitionLevel: {      // 竞争度规则
+      operator: string;      // 如"<="
+      value: number;         // 如20
+      unit: string;          // 如"家店铺"
+      description: string;   // 如"同款在售店铺数"
+      min?: number;
+      max?: number;
+      isUserAdjustable?: boolean;
+    };
+    profitMargin: {          // 利润率规则
+      operator: string;      // 如">="
+      value: number;         // 如40
+      unit: string;          // 如"%"
+      calculation: string;   // 如"(售价-成本)/售价"
+      min?: number;
+      max?: number;
+      isUserAdjustable?: boolean;
+    };
+    additionalRules?: any[]; // 其他特定规则
+  };
+  
+  // 可调整的用户设置
+  userSettings?: {
+    riskTolerance: 'low' | 'medium' | 'high';     // 风险承受能力
+    experience: 'beginner' | 'intermediate' | 'expert'; // 经验水平
+    capital: 'small' | 'medium' | 'large';       // 资金规模
+    timeCommitment: 'part' | 'full';             // 时间投入
+    preferredMargin: number;                     // 期望利润率
+    maxCompetition: number;                      // 可接受竞争度
+  };
+  
+  // 策略调整历史
+  adjustmentHistory?: Array<{
+    timestamp: string;
+    changes: Record<string, any>;
+    reason: string;
+  }>;
+  
+  // 量化指标范围 - 只展示数据不做结论
+  dataRanges: {
+    avgCompetitionScore: string;    // 竞争度分布 如"15-45分"
+    avgProfitMargin: string;        // 利润率分布 如"35-55%"
+    avgMonthlySales: string;        // 月销量分布 如"300-800件"
+    priceRange: string;             // 价格区间 如"20-150元"
+  };
+  
+  coreAdvantages: string[];  // 核心优势（3个）- 现在包含具体数据
   targetUsers: string[];     // 适用人群
   characteristics: {         // 策略特征
     difficulty: string;      // 上手难度
@@ -34,18 +100,17 @@ export interface StrategyConfig {
     riskLevel: string;       // 风险等级
     profitLevel: string;     // 利润水平
   };
+  
+  // 分销特别优势(可选，仅蓝海挖掘策略有)
+  distributionAdvantages?: string[];
+  
   recommendedKeywords: {     // 推荐关键词（策略关联）
     keyword: string;
     heat: number;
     competition: number;
     type: string;            // 关键词类型
-    reason: string;          // 推荐理由
+    reason: string;          // 推荐理由 - 现在包含具体数据
   }[];
-  params: {
-    growthThreshold: number;
-    competitionThreshold: number;
-    profitThreshold: number;
-  };
 }
 
 // 步骤3: 关键词配置
